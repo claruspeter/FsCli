@@ -92,6 +92,7 @@ let ``Command line shows optional help and options`` () =
   lines.[0] |> should equal "USAGE: tkt [--help] command [<options>]"
 
 module Commands =
+
   [<Fact>]
   let ``Shows options`` () =
     let options = getHelp<Verbs> [| "run"; "--help" |] |> getOptions
