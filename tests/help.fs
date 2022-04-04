@@ -66,6 +66,9 @@ module helpers =
     |> Array.takeWhile (fun x -> x.StartsWith("  "))
     |> Array.map (fun x -> x.Trim())
 
+  [<Literal>]
+  let myprog = "testhost"
+
 open helpers
 
 [<Fact>]
@@ -87,9 +90,14 @@ let ``Commands may be undescribed`` () =
   commands.[1] |> should endWith "LIST DESC"
 
 [<Fact>]
+let ``Command line shows top-level exe in usage`` () =
+  let lines = getHelp<Verbs> [| "--help" |] |> asLines
+  lines.[0] |> should startWith $"USAGE: {myprog}"
+
+[<Fact>]
 let ``Command line shows optional help and options`` () =
   let lines = getHelp<Verbs> [| "--help" |] |> asLines
-  lines.[0] |> should equal "USAGE: tkt [--help] command [<options>]"
+  lines.[0] |> should endWith $"[--help] command [<options>]"
 
 module Commands =
 
@@ -132,17 +140,17 @@ module Commands =
   [<Fact>]
   let ``Command line shows options`` () =
     let lines = getHelp<Verbs> [| "run"; "--help" |] |> asLines
-    lines.[0] |> should equal "USAGE: tkt run --name --data [--help]"
+    lines.[0] |> should equal $"USAGE: {myprog} run --name --data [--help]"
 
   [<Fact>]
   let ``Command line shows optional options in square brackets`` () =
     let lines = getHelp<Verbs> [| "optional"; "--help" |] |> asLines
-    lines.[0] |> should equal "USAGE: tkt optional --name [--title] [--another] [--help]"
+    lines.[0] |> should equal $"USAGE: {myprog} optional --name [--title] [--another] [--help]"
 
   [<Fact>]
   let ``Command line shows command subject without dashes`` () =
     let lines = getHelp<Verbs> [| "subjective"; "--help" |] |> asLines
-    lines.[0] |> should equal "USAGE: tkt subjective subject --name [--value] [--help]"
+    lines.[0] |> should equal $"USAGE: {myprog} subjective subject --name [--value] [--help]"
 
   [<Fact>]
   let ``Options show subject without dashes`` () =

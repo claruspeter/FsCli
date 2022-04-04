@@ -7,6 +7,10 @@ open Microsoft.FSharp.Reflection
 open FsCli.Du
 open FsCli.Records
 
+let exeName =
+  System.Reflection.Assembly.GetEntryAssembly().GetName().Name
+  |> System.IO.Path.GetFileNameWithoutExtension
+
 let private thingDescription (thingType:Type) =
   thingType.GetCustomAttributes true
   |> Array.filter (fun a -> a.GetType() = typeof<DescriptionAttribute>)
@@ -26,7 +30,7 @@ let helpForCommand cmdType name description =
     |> fun x -> String.Join(" ", x)
 
   [
-    sprintf "USAGE: tkt %s %s [--help]" name line
+    sprintf "USAGE: %s %s %s [--help]" exeName name line
     description
     ""
     "OPTIONS:"
@@ -56,7 +60,7 @@ let helpForCommand cmdType name description =
 
 let help<'V> =
   [
-    sprintf "USAGE: tkt [--help] command [<options>]"
+    sprintf "USAGE: %s [--help] command [<options>]" exeName
     ""
     "COMMANDS:"
     ""

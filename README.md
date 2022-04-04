@@ -85,7 +85,7 @@ type ListCmd = {
   user: string option 
 }
 
-// USAGE: tkt list [--user] [--help]
+// USAGE: myprog list [--user] [--help]
 ```
 
 ### Argument options' types
