@@ -41,26 +41,29 @@ type RunCmd = {
 
 1. Pass the commandline args into the `parse` function
 
-The parser returns either a populated variable of a DU value, or an helpful error message for your users.
+The parser returns either a populated DU value (e.g. `Verbs.Run of RunCmd`), or an helpful error message for your users.
 
 ```fsharp
 open FsCli
 
 [<EntryPoint>]
 let Main argv =
-  match Commandline.parse<Verbs> argv with 
-  | Error msg-> 
-      printfn "%s" msg
+  let userCommand = Commandline.parse<Verbs> argv
+  match userCommand with 
   | Ok cmd -> 
+      // cmd has the value Run, or List, from our Verbs DU definition
       match cmd with 
       | Run runcmd -> DoSomething* runcmd
       | List listcmd -> ListSomething* listcmd
+  | Error msg-> 
+      // msg is an help message that we can just print out to the user
+      printfn "%s" msg
 ```
 \* _DoSomething_ and _ListSomething_ are your functions for acting on the user's commands
 
 A help message for the above run command would look something like:
 ```
-USAGE: tkt run --name --data [--help]
+USAGE: myprog run --name --data [--help]
 A description for the Run verb
 
 OPTIONS:
@@ -72,13 +75,11 @@ OPTIONS:
 Run the thing
 ```
 
-## Some extra options 
-
-There are a few extras and pointers that have helped me:
+## Advanced  
 
 ### Optional Arguments
 
-Use an option type to make arguments optional.  If you do this then the help with show the argument in square brackets
+Use an option type to make arguments optional.  If you do this then the help message will show the argument in square brackets
 ```fsharp
 type ListCmd = {
   user: string option 
@@ -91,22 +92,30 @@ type ListCmd = {
 
 Option values can be any _simple_ type (e.g. string, int, double) and the parsing with accept anything that works for the types `...Parse(x)` method.
 ```fsharp
+open System.ComponentModel // for the description attribute
+
 type ListCmd = {
-  user: string option 
+  [<Description("The user to list for")>]          
+  user: string option
+
+  [<Description("The maximum number of results")>]
   max: int option
 }
 
 // USAGE: myprog list [--user] [--max] [--help]
 // ...
-//    --name    (String)
-//    --max     (Int)
+//    --name    The user to list for (String)
+//    --max     The maximum number of results (Int)
 ```
 
 ### Commands with a subject
 
-Sometime the commands I make need a subject. For instance:
+Sometime we need a subject to apply the command to.
+For instance, creating a thing that needs to be named, like a user, or maybe an address object.
+
 ```bash
-myprog create admin --name Peter --title programmer
+myprog create user --name Peter --value 42
+myprog create address --name Home --value 69
 ```
 
 I can nominate a command subject with the `Key` attribute:
@@ -114,10 +123,10 @@ I can nominate a command subject with the `Key` attribute:
 open System.ComponentModel
 type CreateCmd ={
   [<DataAnnotations.Key>]
-  usertype: string
+  itemType: string
   name: string
-  title: string option
+  value: int option
 }
 
-// USAGE: myprog create usertype --name [--title] [--help]
+// USAGE: myprog create itemType --name [--value] [--help]
 ```
