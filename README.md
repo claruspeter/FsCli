@@ -118,7 +118,7 @@ myprog create user --name Peter --value 42
 myprog create address --name Home --value 69
 ```
 
-I can nominate a command subject with the `Key` attribute:
+A command subject can be nominated with the `Key` attribute:
 ```fsharp
 open System.ComponentModel
 type CreateCmd ={
