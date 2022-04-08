@@ -16,7 +16,20 @@ let private thingDescription (thingType:Type) =
   |> Array.filter (fun a -> a.GetType() = typeof<DescriptionAttribute>)
   |> Array.map (fun d -> (d :?> DescriptionAttribute).Description)
   |> fun x-> String.Join("", x)
-  
+
+let OptionTypeDescription (tp:Type) =
+  let finalType = FinalType tp
+  if FSharpType.IsUnion finalType then 
+    FSharpType.GetUnionCases(finalType)
+    |> Array.map (fun x -> x.Name)
+    |> fun x -> String.Join("|", x)
+  else if finalType.IsEnum then
+    Enum.GetNames(finalType)
+    |> Array.map (fun x -> x)
+    |> fun x -> String.Join("|", x)    
+  else
+    finalType.Name
+
 let helpForCommand cmdType name description =
   let options = recordMap cmdType
   let line = 
@@ -45,7 +58,7 @@ let helpForCommand cmdType name description =
             (if x.isSubject then 18 else 16)
             x.name 
             x.description 
-            (x.tp |> FinalType).Name
+            (x.tp |> OptionTypeDescription)
     )
     |> Array.toList
   )

@@ -7,7 +7,7 @@
 
   <PropertyGroup>
     <PackageId>FsCli</PackageId>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Authors>Peter Bayne</Authors>
     <Title>FsCli</Title>
     <Description>Parse the command line into a simple command record</Description>
@@ -24,8 +24,12 @@
     <Compile Include="records.fs" />
     <Compile Include="help.fs" />
     <Compile Include="cli.fs" />
-    <None Include="..\LICENCE.txt" Pack="true" PackagePath=""/>
-    <None Include="..\README.md" Pack="true" PackagePath=""/>
+    <None Include="..\LICENCE.txt" Pack="true" PackagePath="" />
+    <None Include="..\README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
 </Project>

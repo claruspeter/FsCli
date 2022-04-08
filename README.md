@@ -79,20 +79,29 @@ Run the thing
 
 ### Optional Arguments
 
-Use an option type to make arguments optional.  If you do this then the help message will show the argument in square brackets
+Use an option type to make arguments optional
 ```fsharp
 type ListCmd = {
   user: string option 
 }
+```
 
-// USAGE: myprog list [--user] [--help]
+If you do this then the help message will show the argument in square brackets
+```
+USAGE: myprog list [--user] [--help]
 ```
 
 ### Argument options' types
 
-Option values can be any _simple_ type (e.g. string, int, double) and the parsing with accept anything that works for the types `...Parse(x)` method.
+Option values can be :
+1. any _simple_ type (e.g. string, int, double). The parsing with accept anything that works for the type's `...Parse(x)` method
+1. an Enum. e.g. `type Colour = Red=0 | Yellow=1 | Blue=2`
+1. a simple DU without any case types. e.g. `type Size = Small | Medium | Large`
+
 ```fsharp
 open System.ComponentModel // for the description attribute
+
+type Colour = Red=0 | Yellow=1 | Blue=2
 
 type ListCmd = {
   [<Description("The user to list for")>]          
@@ -100,12 +109,16 @@ type ListCmd = {
 
   [<Description("The maximum number of results")>]
   max: int option
+
+  [<Description("The test colour to print")>]
+  colour: Colour option
 }
 
 // USAGE: myprog list [--user] [--max] [--help]
 // ...
 //    --name    The user to list for (String)
 //    --max     The maximum number of results (Int)
+//    --colour  The test colour to print (Red|Yellow|Blue)
 ```
 
 ### Commands with a subject
@@ -127,6 +140,10 @@ type CreateCmd ={
   name: string
   value: int option
 }
-
-// USAGE: myprog create itemType --name [--value] [--help]
 ```
+
+Note that the command's subject does not have a "--" prefix
+```
+USAGE: myprog create itemType --name [--value] [--help]
+```
+

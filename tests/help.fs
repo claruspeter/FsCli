@@ -32,11 +32,23 @@ type SubjectedCmd = {
   value: int option
 }
 
+type Colour = Red=0 | Yellow=1 | Blue=2
+type Size = Small | Medium | Large
+
+type EnumCmd = {
+  [<Description("The colour of the thing")>]
+  colour: Colour option
+  [<Description("The size of the thing")>]
+  size: Size option
+}
+
 type Verbs =
   | [<Description("RUN DESC")>]  Run of RunCmd
   | [<Description("LIST DESC")>] List of ListCmd
   | [<Description("OPT DESC")>]  Optional of OptionalCmd
   | [<Description("SUB DESC")>]  Subjective of SubjectedCmd
+  | [<Description("ENUM DESC")>] Enumerated of EnumCmd
+
 
 
 type PartiallyDescribedVerbs =
@@ -163,3 +175,15 @@ module Commands =
   let ``Options description for subject lines up with other options`` () =
     let options = getHelp<Verbs> [| "subjective"; "--help" |] |> getOptions
     options.[0].IndexOf("The subject") |> should equal ( options.[1].IndexOf("The name") )
+
+  [<Fact>]
+  let ``Enum Options show possible values`` () =
+    let help = getHelp<Verbs> [| "enumerated"; "--help" |] 
+    let lines = help |> asLines
+    lines.[5] |> should equal $"    --colour          The colour of the thing (Red|Yellow|Blue)"
+
+  [<Fact>]
+  let ``DU Options show possible values`` () =
+    let help = getHelp<Verbs> [| "enumerated"; "--help" |] 
+    let lines = help |> asLines
+    lines.[6] |> should equal $"    --size            The size of the thing (Small|Medium|Large)"
